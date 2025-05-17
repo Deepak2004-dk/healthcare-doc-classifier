@@ -61,27 +61,30 @@ with single_tab:
 
         # SHAP Explanation
         st.subheader("🧠 SHAP Explanation (Top Features)")
-        background_texts = [
-            "Patient has shortness of breath and cough.",
-            "History of hypertension and stroke.",
-            "The patient is experiencing chest pain.",
-            "Diabetic patient with blurred vision and fatigue.",
-            "Individual complains of severe headache and dizziness."
-        ]
-        background_vectors = vectorizer.transform(background_texts)
+        try:
+            background_texts = [
+                "Patient has shortness of breath and cough.",
+                "History of hypertension and stroke.",
+                "The patient is experiencing chest pain.",
+                "Diabetic patient with blurred vision and fatigue.",
+                "Individual complains of severe headache and dizziness."
+            ]
+            background_vectors = vectorizer.transform(background_texts)
 
-        def predict_proba_fn(X):
-            return model.predict_proba(X)
+            def predict_proba_fn(X):
+                return model.predict_proba(X)
 
-        explainer = shap.KernelExplainer(predict_proba_fn, background_vectors)
-        shap_values = explainer.shap_values(input_vector, nsamples=100)
+            explainer = shap.KernelExplainer(predict_proba_fn, background_vectors)
+            shap_values = explainer.shap_values(input_vector, nsamples=100)
 
-        feature_names = vectorizer.get_feature_names_out()
-        input_vector_array = input_vector.toarray()
+            feature_names = vectorizer.get_feature_names_out()
+            input_vector_array = input_vector.toarray()
 
-        plt.figure()
-        shap.summary_plot(shap_values, input_vector_array, feature_names=feature_names, plot_type="bar", show=False)
-        st.pyplot(plt.gcf())
+            plt.figure()
+            shap.summary_plot(shap_values, input_vector_array, feature_names=feature_names, plot_type="bar", show=False)
+            st.pyplot(plt.gcf())
+        except Exception as e:
+            st.warning(f"⚠️ SHAP explanation error: {e}")
 
 with batch_tab:
     st.subheader("📂 Upload CSV for Batch Prediction")
